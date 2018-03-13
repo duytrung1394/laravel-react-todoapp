@@ -1,0 +1,7 @@
+input[type='button']{
+    margin: 0 10px;
+}
+input[type='button']:hover{
+    background-color: #fff !important;
+    color: darkcyan !important;
+}
