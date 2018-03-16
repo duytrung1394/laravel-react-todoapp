@@ -10,7 +10,21 @@ let mix = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
+const VENDOR_LIBS = [
+    'axios',
+    'bootstrap',
+    'jquery',
+    'popper.js',
+    'react',
+    'react-dom',
+    'react-redux',
+    'react-router-dom',
+    'redux',
+    'redux-thunk',
+    'lodash'
+];
 
 mix.react('resources/assets/js/app.js', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css')
+   .extract(VENDOR_LIBS)
    .disableNotifications();

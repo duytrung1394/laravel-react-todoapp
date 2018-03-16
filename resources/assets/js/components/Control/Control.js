@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import "./Control.css";
 class Control extends Component {
     render() {
@@ -6,7 +7,7 @@ class Control extends Component {
             <div className='control row'>
                 { this.props.children }
                 <div className='col-4'>
-                    <button type="button" className="btn btn-info">Thêm công việc</button>
+                    <Link to='/tasks/add' exact='false' className="btn btn-info button">Thêm công việc</Link>
                 </div>
             </div>
         );

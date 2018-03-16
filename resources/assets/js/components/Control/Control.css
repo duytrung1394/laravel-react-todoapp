@@ -1,7 +1,7 @@
-.control button{
+.control .button{
     width: 100%;
 }
-.control button:hover{
+.control .button:hover{
     background-color: #fff !important;
     color: darkcyan !important;
 }

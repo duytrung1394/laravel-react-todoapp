@@ -36,10 +36,12 @@ class TasksController extends Controller
     public function store(Request $request)
     {
         $task = new Tasks;
-        $task->name = $request->input('name');
-        $task->content = $request->input('content');
+        $task->name = $request->name;
+        $task->content = $request->content;
+        $task->level = $request->level;
+        $task->status = $request->status;
         $task->save();
-        return response()->json(['message'=>'Thành công']);
+        return response()->json(['task'=> $task]);
     }
 
     /**
@@ -78,10 +80,10 @@ class TasksController extends Controller
         $task = Tasks::find($id);
         $task->name = $request->name;
         $task->content = $request->content;
-        // $task->level = $request->level;
-        // $task->status = $request->status;
+        $task->level = $request->level;
+        $task->status = $request->status;
         $task->save();
-        return response()->json(['message'=>'thanh cong']);
+        return response()->json(['task'=>$task,'messages'=>'success']);
     }
 
     /**
@@ -92,6 +94,8 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $task = Tasks::find($id);
+        $task->delete();
+        return response()->json('success');
     }
 }

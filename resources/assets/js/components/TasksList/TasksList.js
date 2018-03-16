@@ -18,8 +18,6 @@ class TasksList extends Component {
                         </thead>
                         <tbody>
                             { this.props.children }
-                            { this.props.children }
-                            { this.props.children }
                         </tbody>
                     </table>
                 </div>
