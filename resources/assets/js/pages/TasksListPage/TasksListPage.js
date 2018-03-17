@@ -5,7 +5,7 @@ import Sort from './../../components/Sort/Sort';
 import TasksList from './../../components/TasksList/TasksList';
 import TaskItem from './../../components/TaskItem/TaskItem';
 import { connect } from 'react-redux';
-import { actFetchAllApi, actDelTaskApi, actEditTaskApi, actUpdateTaskApi, actSearchTask } from './../../actions/index';
+import { actFetchAllApi, actDelTaskApi, actEditTaskApi, actUpdateTaskApi, actSearchTask, actSortTask } from './../../actions/index';
 import PropTypes from 'prop-types';
 
 class TasksListPage extends Component{
@@ -32,21 +32,24 @@ class TasksListPage extends Component{
     onSearh = (txtSearch) => {
         this.props.onSearchTask(txtSearch);
     }
-
+    onSort = (sort) => {
+        this.props.onSortTask(sort);
+    }
     render(){
-        let { tasks, txtSearch } = this.props;
+        let { tasks, txtSearch, sort } = this.props;
+        console.log(sort);
         // console.log(tasks);
         if(txtSearch){
             tasks = tasks.filter((task, index) => {
                 return task.name.toLowerCase().indexOf(txtSearch.toLowerCase()) !== -1;
             })
         }
-        
+        this.funcSort(tasks, sort);
         return (
             <React.Fragment>
                 <Control>
                     <Search onSearch={ this.onSearh }></Search>
-                    <Sort></Sort>
+                    <Sort onSort={ this.onSort } sort={sort}></Sort>
                 </Control>
                 <TasksList>
                     { this.showTasks(tasks) }
@@ -68,6 +71,25 @@ class TasksListPage extends Component{
         }
         return result;
     }
+    funcSort = (tasks, sort) => {
+        if(tasks.length > 0){
+            if(sort.by === 'name'){
+                tasks = tasks.sort((a, b) => {
+                    if(a.name > b.name) return sort.dir;
+                    else if(a.name < b.name) return -sort.dir;
+                    else return 0;
+                })
+            }
+            if(sort.by === 'level'){
+                tasks = tasks.sort((a, b) => {
+                    if(a.level > b.level) return sort.dir;
+                    else if(a.level < b.level) return -sort.dir;
+                    else return 0;
+                })
+            }
+        }
+        return tasks;
+    } 
 }
 TasksListPage.propTypes = {
     tasks : PropTypes.arrayOf(
@@ -87,7 +109,8 @@ TasksListPage.propTypes = {
 const mapStateToProps = state => {
     return {
         tasks : state.tasks,
-        txtSearch : state.txtSearch
+        txtSearch : state.txtSearch,
+        sort : state.sortTask
     }
 }
 const mapDispatchToProps = (dispatch, props) => {
@@ -103,6 +126,9 @@ const mapDispatchToProps = (dispatch, props) => {
         },
         onSearchTask : (txtSearch) => {
             dispatch(actSearchTask(txtSearch))
+        },
+        onSortTask : (sort) => {
+            dispatch(actSortTask(sort))
         }
     }
 }

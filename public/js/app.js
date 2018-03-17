@@ -455,17 +455,7 @@ function updateLink (link, options, obj) {
 /* 14 */,
 /* 15 */,
 /* 16 */,
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */,
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -484,6 +474,16 @@ var SORT_TASK = exports.SORT_TASK = "SORT_TASK";
 var FILTER_TASK = exports.FILTER_TASK = "FILTER_TASK";
 
 /***/ }),
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
 /* 28 */,
 /* 29 */,
 /* 30 */,
@@ -515,9 +515,9 @@ var FILTER_TASK = exports.FILTER_TASK = "FILTER_TASK";
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.actSearchTask = exports.actUpdateTask = exports.actUpdateTaskApi = exports.actEditTask = exports.actEditTaskApi = exports.actDelTask = exports.actDelTaskApi = exports.actAddTask = exports.actAddTaskApi = exports.actFetchAll = exports.actFetchAllApi = undefined;
+exports.actSortTask = exports.actSearchTask = exports.actUpdateTask = exports.actUpdateTaskApi = exports.actEditTask = exports.actEditTaskApi = exports.actDelTask = exports.actDelTaskApi = exports.actAddTask = exports.actAddTaskApi = exports.actFetchAll = exports.actFetchAllApi = undefined;
 
-var _ActionsType = __webpack_require__(27);
+var _ActionsType = __webpack_require__(17);
 
 var Types = _interopRequireWildcard(_ActionsType);
 
@@ -607,6 +607,13 @@ var actSearchTask = exports.actSearchTask = function actSearchTask(txtSearch) {
     };
 };
 
+var actSortTask = exports.actSortTask = function actSortTask(sort) {
+    return {
+        type: Types.SORT_TASK,
+        sort: sort
+    };
+};
+
 /***/ }),
 /* 51 */,
 /* 52 */,
@@ -621,7 +628,7 @@ var actSearchTask = exports.actSearchTask = function actSearchTask(txtSearch) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(61);
-module.exports = __webpack_require__(176);
+module.exports = __webpack_require__(177);
 
 
 /***/ }),
@@ -663,7 +670,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * building robust, powerful web applications using React + Laravel.
  */
 
-__webpack_require__(155);
+__webpack_require__(156);
 
 /**
  * Next, we will create a fresh React component instance and attach it to
@@ -1138,6 +1145,8 @@ var TasksListPage = function (_Component) {
             _this.props.onUpdateTask(task);
         }, _this.onSearh = function (txtSearch) {
             _this.props.onSearchTask(txtSearch);
+        }, _this.onSort = function (sort) {
+            _this.props.onSortTask(sort);
         }, _this.showTasks = function (tasks) {
             var result = [];
             if (tasks.length > 0) {
@@ -1151,6 +1160,20 @@ var TasksListPage = function (_Component) {
                 });
             }
             return result;
+        }, _this.funcSort = function (tasks, sort) {
+            if (tasks.length > 0) {
+                if (sort.by === 'name') {
+                    tasks = tasks.sort(function (a, b) {
+                        if (a.name > b.name) return sort.dir;else if (a.name < b.name) return -sort.dir;else return 0;
+                    });
+                }
+                if (sort.by === 'level') {
+                    tasks = tasks.sort(function (a, b) {
+                        if (a.level > b.level) return sort.dir;else if (a.level < b.level) return -sort.dir;else return 0;
+                    });
+                }
+            }
+            return tasks;
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }
 
@@ -1164,15 +1187,17 @@ var TasksListPage = function (_Component) {
         value: function render() {
             var _props = this.props,
                 tasks = _props.tasks,
-                txtSearch = _props.txtSearch;
-            // console.log(tasks);
+                txtSearch = _props.txtSearch,
+                sort = _props.sort;
 
+            console.log(sort);
+            // console.log(tasks);
             if (txtSearch) {
                 tasks = tasks.filter(function (task, index) {
                     return task.name.toLowerCase().indexOf(txtSearch.toLowerCase()) !== -1;
                 });
             }
-
+            this.funcSort(tasks, sort);
             return _react2.default.createElement(
                 _react2.default.Fragment,
                 null,
@@ -1180,7 +1205,7 @@ var TasksListPage = function (_Component) {
                     _Control2.default,
                     null,
                     _react2.default.createElement(_Search2.default, { onSearch: this.onSearh }),
-                    _react2.default.createElement(_Sort2.default, null)
+                    _react2.default.createElement(_Sort2.default, { onSort: this.onSort, sort: sort })
                 ),
                 _react2.default.createElement(
                     _TasksList2.default,
@@ -1210,7 +1235,8 @@ TasksListPage.propTypes = {
 var mapStateToProps = function mapStateToProps(state) {
     return {
         tasks: state.tasks,
-        txtSearch: state.txtSearch
+        txtSearch: state.txtSearch,
+        sort: state.sortTask
     };
 };
 var mapDispatchToProps = function mapDispatchToProps(dispatch, props) {
@@ -1226,6 +1252,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, props) {
         },
         onSearchTask: function onSearchTask(txtSearch) {
             dispatch((0, _index.actSearchTask)(txtSearch));
+        },
+        onSortTask: function onSortTask(sort) {
+            dispatch((0, _index.actSortTask)(sort));
         }
     };
 };
@@ -1590,14 +1619,35 @@ var Sort = function (_Component) {
     _inherits(Sort, _Component);
 
     function Sort() {
+        var _ref;
+
+        var _temp, _this, _ret;
+
         _classCallCheck(this, Sort);
 
-        return _possibleConstructorReturn(this, (Sort.__proto__ || Object.getPrototypeOf(Sort)).apply(this, arguments));
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Sort.__proto__ || Object.getPrototypeOf(Sort)).call.apply(_ref, [this].concat(args))), _this), _this.handleSort = function (by, dir) {
+            _this.props.onSort({
+                by: by,
+                dir: dir
+            });
+        }, _temp), _possibleConstructorReturn(_this, _ret);
     }
 
     _createClass(Sort, [{
         key: "render",
         value: function render() {
+            var _this2 = this;
+
+            var sort = this.props.sort;
+
+            var sortBy = sort.by === 'name' ? 'name' : 'level';
+            var sortDir = sort.dir === 1 ? 'ASC' : 'DESC';
+            var elmSortTitle = sortBy.toUpperCase() + '-' + sortDir.toUpperCase();
+
             return _react2.default.createElement(
                 "div",
                 { className: "col-3" },
@@ -1610,32 +1660,45 @@ var Sort = function (_Component) {
                         _react2.default.createElement(
                             "a",
                             { className: "btn btn-info dropdown-toggle", href: "#", role: "button", id: "dropdownMenuLink", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                            "Dropdown link"
+                            "S\u1EAFp x\u1EBFp"
                         ),
                         _react2.default.createElement(
                             "div",
                             { className: "dropdown-menu", "aria-labelledby": "dropdownMenuLink" },
                             _react2.default.createElement(
-                                "a",
-                                { className: "dropdown-item", href: "#" },
-                                "Action"
+                                "button",
+                                { className: "dropdown-item", onClick: function onClick() {
+                                        return _this2.handleSort('name', 1);
+                                    } },
+                                "A-Z"
                             ),
                             _react2.default.createElement(
-                                "a",
-                                { className: "dropdown-item", href: "#" },
-                                "Another action"
+                                "button",
+                                { className: "dropdown-item", onClick: function onClick() {
+                                        return _this2.handleSort('name', -1);
+                                    } },
+                                "Z-A"
                             ),
                             _react2.default.createElement(
-                                "a",
-                                { className: "dropdown-item", href: "#" },
-                                "Something else here"
+                                "button",
+                                { className: "dropdown-item", onClick: function onClick() {
+                                        return _this2.handleSort('level', 1);
+                                    } },
+                                "Level t\u0103ng d\u1EA7n"
+                            ),
+                            _react2.default.createElement(
+                                "button",
+                                { className: "dropdown-item", onClick: function onClick() {
+                                        return _this2.handleSort('level', -1);
+                                    } },
+                                "Level gi\u1EA3m d\u1EA7n"
                             )
                         )
                     ),
                     _react2.default.createElement(
                         "span",
                         { className: "sort-title" },
-                        "M\u1EDBi nh\u1EA5t"
+                        elmSortTitle
                     )
                 )
             );
@@ -2480,16 +2543,21 @@ var _editTask = __webpack_require__(154);
 
 var _editTask2 = _interopRequireDefault(_editTask);
 
-var _searchTask = __webpack_require__(179);
+var _searchTask = __webpack_require__(155);
 
 var _searchTask2 = _interopRequireDefault(_searchTask);
+
+var _sortTask = __webpack_require__(180);
+
+var _sortTask2 = _interopRequireDefault(_sortTask);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var appReducers = (0, _redux.combineReducers)({
     tasks: _tasks2.default,
     editTask: _editTask2.default,
-    txtSearch: _searchTask2.default
+    txtSearch: _searchTask2.default,
+    sortTask: _sortTask2.default
 });
 exports.default = appReducers;
 
@@ -2504,7 +2572,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _ActionsType = __webpack_require__(27);
+var _ActionsType = __webpack_require__(17);
 
 var Types = _interopRequireWildcard(_ActionsType);
 
@@ -2566,7 +2634,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _ActionsType = __webpack_require__(27);
+var _ActionsType = __webpack_require__(17);
 
 var Types = _interopRequireWildcard(_ActionsType);
 
@@ -2591,6 +2659,39 @@ exports.default = editTask;
 
 /***/ }),
 /* 155 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _ActionsType = __webpack_require__(17);
+
+var Types = _interopRequireWildcard(_ActionsType);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var initialState = "";
+
+var searchTask = function searchTask() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case Types.SEARCH_TASK:
+            return action.txtSearch;
+        default:
+            return state;
+    }
+};
+
+exports.default = searchTask;
+
+/***/ }),
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2653,7 +2754,6 @@ if (token) {
 // });
 
 /***/ }),
-/* 156 */,
 /* 157 */,
 /* 158 */,
 /* 159 */,
@@ -2673,15 +2773,16 @@ if (token) {
 /* 173 */,
 /* 174 */,
 /* 175 */,
-/* 176 */
+/* 176 */,
+/* 177 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 177 */,
 /* 178 */,
-/* 179 */
+/* 179 */,
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2691,21 +2792,24 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _ActionsType = __webpack_require__(27);
+var _ActionsType = __webpack_require__(17);
 
 var Types = _interopRequireWildcard(_ActionsType);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var initialState = "";
+var initialState = {
+    by: "level",
+    dir: -1
+};
 
 var searchTask = function searchTask() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
     var action = arguments[1];
 
     switch (action.type) {
-        case Types.SEARCH_TASK:
-            return action.txtSearch;
+        case Types.SORT_TASK:
+            return action.sort;
         default:
             return state;
     }
